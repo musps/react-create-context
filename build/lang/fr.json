@@ -1,0 +1,5 @@
+{
+  "hello": "Bonjour",
+  "hello_name": "Bonjour :name",
+  "hello_name_date": "Bonjour :name, nous sommes le :date"
+}
