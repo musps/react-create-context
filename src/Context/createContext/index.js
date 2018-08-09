@@ -1,18 +1,12 @@
 import React, { Component } from 'react';
-
-const preLog = (name, ...args) => console.log(name, ...args);
-const getClassOf = target => Object.prototype.toString.call(target);
-const isObject = obj => getClassOf(obj) === '[object Object]';
-const isFunction = obj => getClassOf(obj) === '[object Function]';
-const bindContextForAction = (action, context) => (
-  Object.assign(action, ...Object.keys(action)
-    .map(
-      (actionName) => ({
-        [actionName]: action[actionName].bind(context)
-      })
-    )
-  )
-);
+import {
+  preLog,
+  getClassOf,
+  isObject,
+  isFunction,
+  bindContextForAction,
+  createStore
+} from './utils';
 
 const createContext = (contextName, contextData = {}, contextAction = {}) => {
   const log = (...args) => preLog(contextName, ...args);
@@ -41,7 +35,6 @@ const createContext = (contextName, contextData = {}, contextAction = {}) => {
 
     updateState(fnOrObject) {
       let nextState = {};
-      let isError = false;
       const updater = (prevState) => {
         return {
           ...prevState,
@@ -52,18 +45,17 @@ const createContext = (contextName, contextData = {}, contextAction = {}) => {
         };
       };
 
-      if (isFunction(fnOrObject)) {
-        nextState = fnOrObject(this.state.data);
-      } else if (isObject(fnOrObject)) {
-        nextState = fnOrObject;
-      } else {
-        isError = true;
-      }
-
-      if (!isError) {
+      try {
+        if (isFunction(fnOrObject)) {
+          nextState = fnOrObject(this.state.data);
+        } else if (isObject(fnOrObject)) {
+          nextState = fnOrObject;
+        } else {
+          throw new Error('function or object required.');
+        }
         // Apply updater
         this.setState(updater);
-      }
+      } catch (e) {}
     }
 
     render() {
@@ -76,9 +68,13 @@ const createContext = (contextName, contextData = {}, contextAction = {}) => {
   }
 
   return {
+    contextName,
     withContext,
     ContextComponent
   }
 };
 
+export { 
+  createStore
+};
 export default createContext;

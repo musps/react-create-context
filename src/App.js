@@ -1,8 +1,13 @@
 import React, { Component } from 'react';
-import createContext from './Context/createContext';
+import createContext, { createStore } from './Context/createContext';
+import Home from './Components/Home';
+import Footer from './Components/Footer';
 
 const log = (...args) => console.log(...args);
 
+const UserContext = createContext('UserContext');
+const NewsContext = createContext('NewsContext');
+const CatContext = createContext('CatContext');
 const ThemeContext = createContext('ThemeContext', {}, {
   isDone: function () {
     this.updateState({
@@ -11,42 +16,17 @@ const ThemeContext = createContext('ThemeContext', {}, {
   }
 });
 
-class Home extends Component {
-  constructor(props) {
-    super(props);
-    this.updateTheme = this.updateTheme.bind(this);
-    log(this);
-  }
-
-  updateTheme() {
-    this.props.ThemeContext.action.isDone();
-    setTimeout(() => {
-      console.log('this props', this.props);
-    }, 200);
-  }
-
-  render() {
-    return (
-      <div>
-        <h1>app_name</h1>
-        <button onClick={this.updateTheme}>updateTheme</button>
-      </div>
-    )
-  }
-}
-
-const Footer = (props) => (
-  <div>
-    <ul>
-      {Object.entries(props.ThemeContext.data).map((item, index) => (
-        <li key={index}>{item}</li>
-      ))}
-    </ul>
-  </div>
-);
-
 const HomeRender = ThemeContext.withContext(Home);
 const FooterRender = ThemeContext.withContext(Footer);
+
+const store = createStore(
+  UserContext,
+  NewsContext,
+  CatContext,
+  ThemeContext
+);
+
+log('store', store);
 
 class App extends Component {
   constructor(props) {
